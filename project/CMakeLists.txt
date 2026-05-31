@@ -28,8 +28,13 @@ target_link_libraries(disk_usage_analyzer PRIVATE fmt::fmt)
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(disk_usage_analyzer PRIVATE spdlog::spdlog)
 
-# tests
+# LibC++ hardening
+#target_compile_definitions(disk_usage_analyzer PRIVATE _LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG)
+# Sanitizers (development builds)
+#target_compile_options(disk_usage_analyzer PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=all)
+#target_link_options(disk_usage_analyzer PRIVATE -fsanitize=address,undefined)
 
+# tests
 find_package(GTest CONFIG REQUIRED)
 add_executable(disk_usage_analyzer_test test/test_utils.cpp test/test_traversal.cpp src/Traverser.cpp src/Stats.cpp src/Utils.cpp
         src/DirectoryIteratorAbstraction/DirectoryIteratorInterface.cpp
