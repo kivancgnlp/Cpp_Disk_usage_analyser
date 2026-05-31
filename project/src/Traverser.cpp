@@ -5,47 +5,59 @@
 #include "Traverser.h"
 
 
+void list_files_in_the_directory(const std::string& path_base, Stats &stats,Stats &global_stats, unsigned current_depth, DirectoryIteratorFactory &dir_it_fact) {
+        spdlog::debug("Listing the files in the directory {}", path_base);
 
-void list_files_in_the_directory(const std::filesystem::path& path_base, Stats &stats,Stats &global_stats, unsigned current_depth) {
-        spdlog::debug("Listing the files in the directory {}", path_base.string());
+        auto dir_it = dir_it_fact.getInstance(path_base);
 
-        std::error_code ec{};
-        std::filesystem::directory_iterator dir_it = std::filesystem::directory_iterator(path_base,ec);
-
-        if (ec) {
-                spdlog::warn("Error in listing the files in the directory {}, {}", path_base.string(),ec.message());
+        if (!dir_it) {
+                spdlog::warn("Error in listing the files in the directory {}", path_base);
                 stats.increment_directory_info_error_count();
                 return;
         }
 
-        const std::filesystem::directory_iterator end{};
 
-        while (dir_it != end) {
-                const std::filesystem::path &path_entry = dir_it->path();
+        while (true) {
+                DirEntry dir_entry;
+                auto ne = dir_it->get_next_entry(dir_entry);
 
-                if (std::filesystem::is_symlink(path_entry)) {
-                        spdlog::info("skipping symlink {}", path_entry.string());
+                if (ne == DirectoryIteratorInterface::NextStatus::Exhausted) {
+                        break;
+                }
 
-                }else  if (is_regular_file(path_entry)) {
-                        spdlog::log(spdlog::level::debug,"Processing file : {}", path_entry.string());
+                if (ne == DirectoryIteratorInterface::NextStatus::Error) {
+                        stats.increment_directory_info_error_count();
+                        break;
+                }
+
+                assert(ne == DirectoryIteratorInterface::NextStatus::Entry);
+
+                if (dir_entry.kind == DirEntry::Kind::Symlink) {
+                        spdlog::info("skipping symlink {}", dir_entry.path);
+                        continue;
+                }
+
+
+                if (dir_entry.kind == DirEntry::Kind::File) {
+                        spdlog::log(spdlog::level::debug,"Processing file : {}", dir_entry.path);
 
                         Stats &current_stats = current_depth == 0 ? global_stats : stats;
 
-                        if (std::optional<std::uintmax_t> size = get_file_size(path_entry)) {
+                        if (std::optional<std::uintmax_t> size = dir_entry.size) {
 
-                                current_stats.add_file_size_stat(path_entry,size.value());
+                                current_stats.add_file_size_stat(dir_entry.path,size.value());
 
-                                if (path_entry.has_extension()) {
-                                        current_stats.update_extension_stats(path_entry.extension().string(), size.value());
+                                if (dir_entry.ext) {
+                                        current_stats.update_extension_stats(dir_entry.ext.value(), size.value());
                                 }
                         }else {
                                 current_stats.increment_file_get_size_error_count();
 
                         }
 
-                }else if (is_directory(path_entry)) {
-                        spdlog::debug("Processing directory : {}", path_entry.string());
-                        list_files_in_the_directory(path_entry, stats,global_stats, current_depth + 1);
+                }else if (dir_entry.kind == DirEntry::Kind::Directory) {
+                        spdlog::debug("Processing directory : {}", dir_entry.path);
+                        list_files_in_the_directory(dir_entry.path, stats,global_stats, current_depth + 1, dir_it_fact);
 
                         // Top-level folders (encountered at depth 0) belong to global directly;
                         // nested folders accumulate in stats and ride the end-of-frame migrate.
@@ -53,22 +65,13 @@ void list_files_in_the_directory(const std::filesystem::path& path_base, Stats &
                         folder_count_target.increment_processed_folder_count();
 
                 }else {
-                        spdlog::warn("Unknown entry : {}", path_entry.string());
+                        spdlog::warn("Unknown entry : {}", dir_entry.path);
                         stats.increment_unclassified_entries_count();
 
                 }
 
 
-                {
-                        std::error_code ec{};
-                        dir_it.increment(ec);
 
-                        if (ec) {
-                                spdlog::warn("Could not process file : {}", path_entry.string());
-                                break;
-                        }
-
-                }
 
         }
 
@@ -78,7 +81,7 @@ void list_files_in_the_directory(const std::filesystem::path& path_base, Stats &
         // appear after a subdirectory, and folders with no subdirectory at all,
         // are never stranded.
         if (current_depth == 1) {
-                spdlog::info("Processing completed for folder : {}, folder stats : {}", path_base.string(), stats.to_string<false>());
+                spdlog::info("Processing completed for folder : {}, folder stats : {}", path_base, stats.to_string<false>());
                 global_stats.migrate_stats(std::move(stats));
         }
 

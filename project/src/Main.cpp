@@ -13,6 +13,7 @@
 
 #include "Stats.h"
 #include "Traverser.h"
+#include "DirectoryIteratorAbstraction/DirectoryIteratorInterface.h"
 
 
 int main(int argc, const char * argv[]) {
@@ -28,7 +29,8 @@ int main(int argc, const char * argv[]) {
         Stats global_stats{};
 
         CPPTRACE_TRY {
-                list_files_in_the_directory(path_str, stats,global_stats,0);
+                DirectoryIteratorFactory dir_it_fact{false};
+                list_files_in_the_directory(path_str, stats,global_stats,0,dir_it_fact);
         } CPPTRACE_CATCH(const std::exception& e) {
                 auto trace = cpptrace::from_current_exception().to_string();
                 spdlog::error("Exception: {}\n{}", e.what(), trace);

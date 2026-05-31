@@ -7,7 +7,7 @@
 
 #include <filesystem>
 #include "Stats.h"
+#include "DirectoryIteratorAbstraction/DirectoryIteratorInterface.h"
 
-void list_files_in_the_directory(const std::filesystem::path& path_base, Stats &stats,Stats &global_stats, unsigned current_depth);
-
+void list_files_in_the_directory(const std::string& path_base, Stats &stats,Stats &global_stats, unsigned current_depth, DirectoryIteratorFactory &dir_it_fact);
 #endif //DISK_USAGE_ANALYZER_TRAVERSER_H
