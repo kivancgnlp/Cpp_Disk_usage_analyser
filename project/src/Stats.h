@@ -5,21 +5,18 @@
 #ifndef DISK_USAGE_ANALYZER_STATS_H
 #define DISK_USAGE_ANALYZER_STATS_H
 
-#include <filesystem>
-
-#include <iostream>
-#include <ostream>
 #include <map>
 
-#include <spdlog/spdlog.h>
-
-#include "Utils.h"
+#include <vector>      // [ADD] — std::vector<std::pair<...>> biggest_files (this one bit the build earlier)
+#include <utility>     // [ADD] — std::pair
+#include <string>      // [ADD] — std::string
+#include <cstdint>     // [ADD] — std::uintmax_t
 
 
 
 struct Extension_Stat {
-        unsigned counter;
-        std::uintmax_t acc_size;
+        unsigned counter{};
+        std::uintmax_t acc_size{};
 
         std::map<std::string, Extension_Stat>::mapped_type &operator+=(const Extension_Stat & second) {
                 counter += second.counter;
@@ -47,8 +44,8 @@ class Stats {
         //Stats &operator+=(const Stats & stats);
         void migrate_stats(Stats &&from_stat);
 
-        void update_biggest_files(std::string &&file_path,std::uintmax_t size);
-        void add_file_size_stat(const std::filesystem::path &path, std::uintmax_t size);
+        void update_biggest_files(const std::string &file_path, std::uintmax_t size);
+        void add_file_size_stat(const std::string &path, std::uintmax_t size);
         void update_extension_stats(const std::string& extension, std::uintmax_t file_size);
         void increment_file_get_size_error_count();
         void increment_directory_info_error_count();

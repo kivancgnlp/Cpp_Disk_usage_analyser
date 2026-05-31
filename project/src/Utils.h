@@ -6,7 +6,11 @@
 #define DISK_USAGE_ANALYZER_UTILS_H
 
 #include <filesystem>
-#include <spdlog/spdlog.h>
+
+#include <optional>    // [ADD] — std::optional return type
+#include <cstdint>     // [ADD] — std::uintmax_t (don't rely on <filesystem> dragging it)
+#include <string>      // [ADD] — std::string param
+
 
 
 std::optional<std::uintmax_t> get_file_size(const std::filesystem::path &path);

@@ -29,7 +29,7 @@ int main(int argc, const char * argv[]) {
         Stats global_stats{};
 
         CPPTRACE_TRY {
-                DirectoryIteratorFactory dir_it_fact{false};
+                RealDirectoryIteratorFactory dir_it_fact{};
                 list_files_in_the_directory(path_str, stats,global_stats,0,dir_it_fact);
         } CPPTRACE_CATCH(const std::exception& e) {
                 auto trace = cpptrace::from_current_exception().to_string();

@@ -4,6 +4,11 @@
 
 #include "Stats.h"
 
+#include "Utils.h"
+
+//#include <spdlog/spdlog.h>
+#include <sstream>     //  std::stringstream
+
 
 
 void Stats::migrate_stats(Stats &&from_stat) {
@@ -22,14 +27,14 @@ void Stats::migrate_stats(Stats &&from_stat) {
 
     from_stat.extension_stats.clear();
 
-    for (auto & entry : from_stat.biggest_files) {
-        update_biggest_files(std::move(entry.first),entry.second);
+    for (const auto & entry : from_stat.biggest_files) {
+        update_biggest_files(entry.first,entry.second);
     }
 
     from_stat.biggest_files.clear();
 }
 
-void Stats::update_biggest_files(std::string &&file_path, std::uintmax_t size) {
+void Stats::update_biggest_files(const std::string &file_path, std::uintmax_t size) {
 
     constexpr unsigned TOP_LIST_SIZE = 10;
 
@@ -40,7 +45,7 @@ void Stats::update_biggest_files(std::string &&file_path, std::uintmax_t size) {
             return;
         }
     }
-    biggest_files.emplace_back(std::move(file_path), size);
+    biggest_files.emplace_back(file_path, size);
 
     std::ranges::sort(biggest_files, [](const auto & a, const auto & b) {
         return a.second > b.second;
@@ -53,10 +58,10 @@ void Stats::update_biggest_files(std::string &&file_path, std::uintmax_t size) {
 
 }
 
-void Stats::add_file_size_stat(const std::filesystem::path &path, std::uintmax_t size) {
+void Stats::add_file_size_stat(const std::string &path, std::uintmax_t size) {
     total_size += size;
     processed_files++;
-    update_biggest_files(path.string(), size);
+    update_biggest_files(path, size);
 }
 
 void Stats::update_extension_stats(const std::string &extension, std::uintmax_t file_size) {

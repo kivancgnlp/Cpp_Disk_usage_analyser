@@ -3,9 +3,10 @@
 //
 
 #include "Traverser.h"
+#include <spdlog/spdlog.h>
 
 
-void list_files_in_the_directory(const std::string& path_base, Stats &stats,Stats &global_stats, unsigned current_depth, DirectoryIteratorFactory &dir_it_fact) {
+void list_files_in_the_directory(const std::string& path_base, Stats &stats,Stats &global_stats, unsigned current_depth, DirectoryIteratorFactoryInterface &dir_it_fact) {
         spdlog::debug("Listing the files in the directory {}", path_base);
 
         auto dir_it = dir_it_fact.getInstance(path_base);

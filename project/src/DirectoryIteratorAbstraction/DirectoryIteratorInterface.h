@@ -4,7 +4,11 @@
 
 #ifndef DISK_USAGE_ANALYZER_DIRECTORYITERATORINTERFACE_H
 #define DISK_USAGE_ANALYZER_DIRECTORYITERATORINTERFACE_H
+
 #include <string>
+#include <optional>   // [ADD] — std::optional<std::string> ext, optional<uintmax_t> size
+#include <cstdint>    // [ADD] — std::uintmax_t
+#include <memory>     // [ADD] — std::unique_ptr getInstance return
 
 struct DirEntry {
     std::string path;
@@ -26,14 +30,18 @@ class DirectoryIteratorInterface {
     virtual NextStatus get_next_entry(DirEntry& out) = 0;
 };
 
-class DirectoryIteratorFactory {
+class DirectoryIteratorFactoryInterface {
 
-    bool m_mock;
-    public:
-    explicit DirectoryIteratorFactory(bool mock) : m_mock(mock) {}
+public:
+    virtual ~DirectoryIteratorFactoryInterface() = default;
+    virtual std::unique_ptr<DirectoryIteratorInterface> getInstance(const std::string &path) = 0;
 
-    std::unique_ptr<DirectoryIteratorInterface> getInstance(const std::string &path);
+};
 
+class RealDirectoryIteratorFactory : public DirectoryIteratorFactoryInterface {
+
+public:
+    std::unique_ptr<DirectoryIteratorInterface> getInstance(const std::string &path) override;
 };
 
 
