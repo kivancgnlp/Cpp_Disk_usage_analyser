@@ -31,8 +31,11 @@ target_link_libraries(disk_usage_analyzer PRIVATE spdlog::spdlog)
 # tests
 
 find_package(GTest CONFIG REQUIRED)
-add_executable(disk_usage_analyzer_test test/test_utils.cpp src/Traverser.cpp src/Stats.cpp src/Utils.cpp
+add_executable(disk_usage_analyzer_test test/test_utils.cpp test/test_traversal.cpp src/Traverser.cpp src/Stats.cpp src/Utils.cpp
         src/DirectoryIteratorAbstraction/DirectoryIteratorInterface.cpp
-        src/DirectoryIteratorAbstraction/DirectoryIteratorInterface.h)
+        src/DirectoryIteratorAbstraction/DirectoryIteratorInterface.h
+        test/FakeDirectoryIterator.h)
 #add_executable(dua_tests tests/test_utils.cpp tests/test_stats.cpp)
 target_link_libraries(disk_usage_analyzer_test PRIVATE GTest::gtest_main spdlog::spdlog)
+
+

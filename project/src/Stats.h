@@ -59,6 +59,10 @@ class Stats {
         [[nodiscard]] unsigned get_processed_folder_count() const {
                 return processed_folders;
         }
+
+        [[nodiscard]] std::uintmax_t get_total_size() const {
+                return total_size;
+        }
 };
 
 
