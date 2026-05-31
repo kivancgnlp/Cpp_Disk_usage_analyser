@@ -6,9 +6,9 @@
 #define DISK_USAGE_ANALYZER_DIRECTORYITERATORINTERFACE_H
 
 #include <string>
-#include <optional>   // [ADD] — std::optional<std::string> ext, optional<uintmax_t> size
-#include <cstdint>    // [ADD] — std::uintmax_t
-#include <memory>     // [ADD] — std::unique_ptr getInstance return
+#include <optional>
+#include <cstdint>
+#include <memory>
 
 struct DirEntry {
     std::string path;
