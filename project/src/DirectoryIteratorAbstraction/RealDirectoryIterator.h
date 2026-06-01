@@ -51,10 +51,10 @@ class RealDirectoryIterator : public DirectoryIteratorInterface{
 
                         if (std::filesystem::is_symlink(path_entry)) {
                                 spdlog::info("symlink {}", path_entry.string());
-                                out.path = path_entry;
+                                out.path = path_entry.string();
                                 out.kind = DirEntry::Kind::Symlink;
                                 if (path_entry.has_extension()) {
-                                        out.ext = path_entry.extension();
+                                        out.ext = path_entry.extension().string();
                                 }
                                 next_status = NextStatus::Entry;
                                 break;
@@ -65,7 +65,7 @@ class RealDirectoryIterator : public DirectoryIteratorInterface{
                         if (is_directory(path_entry)) {
                                 spdlog::debug("Processing directory : {}", path_entry.string());
                                 out.kind = DirEntry::Kind::Directory;
-                                out.path = path_entry;
+                                out.path = path_entry.string();
                                 next_status = NextStatus::Entry;
                                 break;
                         }
@@ -74,10 +74,10 @@ class RealDirectoryIterator : public DirectoryIteratorInterface{
                                 spdlog::log(spdlog::level::debug,"Processing file : {}", path_entry.string());
 
                                 out.kind = DirEntry::Kind::File;
-                                out.path = path_entry;
+                                out.path = path_entry.string();
 
                                 if (path_entry.has_extension()) {
-                                        out.ext = path_entry.extension();
+                                        out.ext = path_entry.extension().string();
                                 }
 
                                 out.size = get_file_size(path_entry);

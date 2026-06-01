@@ -28,11 +28,25 @@ target_link_libraries(disk_usage_analyzer PRIVATE fmt::fmt)
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(disk_usage_analyzer PRIVATE spdlog::spdlog)
 
-# LibC++ hardening
+# LibC++ hardening begin
 #target_compile_definitions(disk_usage_analyzer PRIVATE _LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG)
 # Sanitizers (development builds)
 #target_compile_options(disk_usage_analyzer PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=all)
 #target_link_options(disk_usage_analyzer PRIVATE -fsanitize=address,undefined)
+# LibC++ hardening end
+
+# GNU hardening begin
+# Debug: full checks (breaks ABI — all linked code must also use _GLIBCXX_DEBUG)
+#target_compile_definitions(disk_usage_analyzer PRIVATE
+#        $<$<CONFIG:Debug>:_GLIBCXX_DEBUG>
+#        $<$<CONFIG:Debug>:_GLIBCXX_ASSERTIONS>
+#        $<$<CONFIG:Release>:_GLIBCXX_ASSERTIONS>
+#)
+
+# Sanitizers (development builds)
+#target_compile_options(disk_usage_analyzer PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=all)
+#target_link_options(disk_usage_analyzer PRIVATE -fsanitize=address,undefined)
+# GNU hardening end
 
 # tests
 find_package(GTest CONFIG REQUIRED)
