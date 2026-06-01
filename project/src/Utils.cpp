@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include <spdlog/spdlog.h>
+#include <array>
 
 
 std::optional<std::uintmax_t> get_file_size(const std::filesystem::path &path) {
