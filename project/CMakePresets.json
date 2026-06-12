@@ -18,7 +18,9 @@
       "name": "Windows10",
       "inherits": "base",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "D:/vcpkg-master/scripts/buildsystems/vcpkg.cmake",
+        //"VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic",
+        //"VCPKG_HOST_TRIPLET": "x64-mingw-dynamic"
       }
     }
   ]
