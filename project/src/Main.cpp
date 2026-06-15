@@ -1,10 +1,10 @@
 
 
-
 #include <filesystem>
 
 #include <iostream>
 #include <ostream>
+#include <clocale>
 
 #include <spdlog/spdlog.h>
 
@@ -17,6 +17,12 @@
 
 
 int main(int argc, const char * argv[]) {
+
+#ifdef _WIN32
+        // Make std::filesystem::path::string() produce UTF-8 on Windows 10 1903+.
+        // Without this, the system ANSI code page is used, corrupting non-ASCII paths.
+        std::setlocale(LC_ALL, ".UTF-8");
+#endif
 
         CLI::App app{"Kiv disk usage analyzer"};
 
